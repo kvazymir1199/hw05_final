@@ -97,7 +97,7 @@ class TaskURLTests(TestCase):
                 'posts:post_detail',
                 kwargs={'post_id': self.post.id}
             ): 'posts/post_detail.html',
-            # reverse('core:page_not_found'): 'core/404.html',
+
         }
 
         for name, templates in reversed_names.items():
