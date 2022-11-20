@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="../img/fav/fav.ico" type="image">
+    <link rel="apple-touch-icon" sizes="180x180"
+          href="../img/fav/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32"
+          href="../img/fav/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16"
+          href="../img/fav/favicon-16x16.png">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <title>
+        {% block title %}
+            {{ title }}
+        {% endblock %}
+    </title>
+</head>
+<body>
+<header>
+    <!-- Использованы классы бустрапа для создания типовой навигации с логотипом -->
+    <!-- В дальнейшем тут будет создано полноценное меню -->
+    {% include 'includes/header.html' %}
+</header>
+<main>
+    {% block content %}
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8 p-5">
+                    <div class="card">
+                        <div class="card-header">
+                            {{ title }}
+                        </div>
+                        <div class="card-body">
+                            {% load user_filters %} {# Загружаем фильтры #}
+                            {% if form.errors %}
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <div class="alert alert-danger">
+                                            {{ error|escape }}
+                                        </div>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
+                                    <div class="alert alert-danger">
+                                        {{ error|escape }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {# Выводим поля в цикле, по отдельности #}
+                                {% for field in form %}
+                                    <div class="form-group row my-3 p-3">
+                                        <label for="id_for_label">
+                                            {{ field.label }}
+                                            {% if field.field.required %}
+                                                <span class="required text-danger">*</span>
+                                            {% endif %}
+                                        </label>
+                                        {{ field }}
+                                        <small id="{{ field.id_for_label }}-help"
+                                               class="form-text text-muted">
+                                            {{ field.help_text|safe }}
+                                        </small>
+                                    </div>
+                                {% endfor %}
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit"
+                                            class="btn btn-primary">
+                                        {% if is_edit %}
+                                            Сохранить
+                                        {% else %}
+                                            Добавить
+                                        {% endif %}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+</main>
+<footer class="border-top text-center py-3">
+    <!-- тег span используется для добавления нужных стилей отдельным участкам текста -->
+    {% include 'includes/footer.html' %}
+</footer>
+</body>
+</html>
