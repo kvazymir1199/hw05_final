@@ -1,5 +1,3 @@
-# posts/views.py
-from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post, Group, User, Comment, Follow
 from django.contrib.auth.decorators import login_required
@@ -48,7 +46,7 @@ def profile(request, username):
         'title': title,
         'author': author,
         'count': post_list.count(),
-        'following':following,
+        'following': following,
     }
     return render(request, 'posts/profile.html', context)
 
@@ -125,7 +123,6 @@ def add_comment(request, post_id):
 def follow_index(request):
     username = request.user
     post = Post.objects.filter(author__following__user=username)
-    #post = get_object_or_404(Post, author__following__user=username)
     post_obj = page_paginator(request, post)
     context = {
         'page_obj': post_obj,
