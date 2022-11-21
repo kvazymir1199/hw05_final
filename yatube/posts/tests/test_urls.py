@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-
+from django.core.cache import cache
 from ..models import Group, Post
 from django.contrib.auth import get_user_model
 from http import HTTPStatus
@@ -25,6 +25,7 @@ class TaskURLTests(TestCase):
         )
 
     def setUp(self):
+        cache.clear()
         self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
@@ -84,7 +85,7 @@ class TaskURLTests(TestCase):
     # Проверка шаблонов
     def test_template(self):
         reversed_names = {
-            # reverse('posts:index'): 'posts/index.html',
+            reverse('posts:index'): 'posts/index.html',
             reverse(
                 'posts:group_list',
                 kwargs={'slug': self.group.slug}

@@ -1,4 +1,3 @@
-# deals/tests/test_views.py
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from ..models import Group, Post, Follow
@@ -35,6 +34,7 @@ class TaskPagesTests(TestCase):
         )
 
     def setUp(self):
+        cache.clear()
         self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
@@ -46,9 +46,8 @@ class TaskPagesTests(TestCase):
 
     def test_pages_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
-        # Собираем в словарь пары "имя_html_шаблона: reverse(name)"
         templates_pages_names = {
-            # 'posts/index.html': reverse('posts:index'),
+            'posts/index.html': reverse('posts:index'),
             'posts/group_list.html':
                 reverse('posts:group_list', kwargs={'slug': self.group.slug}
                         ),
@@ -63,17 +62,15 @@ class TaskPagesTests(TestCase):
                         ),
 
         }
-        # Проверяем, что при обращении к name вызывается
-        # соответствующий HTML-шаблон
         for template, reverse_name in templates_pages_names.items():
             with self.subTest(reverse_name=reverse_name):
                 response = self.authorized_client.get(reverse_name)
                 self.assertTemplateUsed(response, template)
 
-    # def test_index_page_show_correct_context(self):
-    #     response = self.authorized_client.get(reverse('posts:index'))
-    #     text = response.context['page_obj'][0].text
-    #     self.assertEqual(text, self.post.text)
+    def test_index_page_show_correct_context(self):
+        response = self.authorized_client.get(reverse('posts:index'))
+        text = response.context['page_obj'][0].text
+        self.assertEqual(text, self.post.text)
 
     def test_group_list_page_show_correct_context(self):
         response = self.authorized_client.get(
@@ -135,8 +132,6 @@ class TaskPagesTests(TestCase):
         for value, expected in form_fields.items():
             with self.subTest(value=value):
                 form_field = response.context.get('form').fields.get(value)
-                # Проверяет, что поле формы является экземпляром
-                # указанного класса
                 self.assertIsInstance(form_field, expected)
 
 
@@ -159,22 +154,23 @@ class PaginatorViewsTest(TestCase):
             )
 
     def setUp(self):
+        cache.clear()
         self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
 
-    # def test_first_page_index_contains_ten_records(self):
-    #     response = self.client.get(reverse('posts:index'))
-    #     # Проверка: количество постов на первой странице равно 10.
-    #     self.assertEqual(len(response.context['page_obj']), PAGE_LEN)
-    #
-    # def test_second_page_index_contains_three_records(self):
-    #     # Проверка: на второй странице должно быть три поста.
-    #     response = self.client.get(reverse('posts:index') + '?page=2')
-    #     self.assertEqual(
-    #         Post.objects.count() - len(response.context['page_obj']),
-    #         PAGE_LEN
-    #     )
+    def test_first_page_index_contains_ten_records(self):
+        response = self.client.get(reverse('posts:index'))
+        # Проверка: количество постов на первой странице равно 10.
+        self.assertEqual(len(response.context['page_obj']), PAGE_LEN)
+
+    def test_second_page_index_contains_three_records(self):
+        # Проверка: на второй странице должно быть три поста.
+        response = self.client.get(reverse('posts:index') + '?page=2')
+        self.assertEqual(
+            Post.objects.count() - len(response.context['page_obj']),
+            PAGE_LEN
+        )
 
     def test_first_page_group_lists_contains_ten_records(self):
         response = self.authorized_client.get(
@@ -238,7 +234,6 @@ class PagesTest(TestCase):
                 description=f'текст группы {group}',
                 slug=f'test-slug-{group}'
             )
-
         cls.new_post = Post.objects.create(
             author=cls.user,
             text='Test Post Text',
@@ -246,6 +241,7 @@ class PagesTest(TestCase):
         )
 
     def setUp(self):
+        cache.clear()
         self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
@@ -254,7 +250,7 @@ class PagesTest(TestCase):
         first_group = Group.objects.first()
         last_group = Group.objects.last()
         reverses = {
-            # reverse('posts:index'),
+            reverse('posts:index'),
             reverse(
                 'posts:group_list',
                 kwargs={'slug': last_group.slug}
@@ -284,14 +280,9 @@ class CacheTest(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create_user(username='Denis')
-        for group in range(1, 3):
-            Group.objects.create(
-                title=f'Тестовый заголовок Группы {group}',
-                description=f'текст группы {group}',
-                slug=f'test-slug-{group}'
-            )
 
     def setUp(self):
+        cache.clear()
         self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)

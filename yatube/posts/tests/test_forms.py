@@ -41,31 +41,22 @@ class TaskCreateFormTests(TestCase):
 
     def test_create_post_without_group(self):
         '''Проверка на создание поста без указания группы'''
-        # Получу количество постов
         posts_count_before_creation = Post.objects.count()
-
-        # Создам образец формы для создания поста
         form_data = {
             'text': 'Текст для поста без группы',
             'group': ''
         }
-        # Отправляю запрос на создание поста с ранее созданной формой
         response = self.authorized_client.post(
             reverse('posts:post_create'),
             data=form_data,
             follow=True
         )
-        # Проверю статус ответа должен быть 200
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        # Получу количество постов после создания поста
         posts_count_after_creation = Post.objects.count()
-        # Количество до создания должен быть меньше
         self.assertEqual(
             posts_count_before_creation + 1,
             posts_count_after_creation
         )
-        # проверю что пост действительно был создан с указанием поля Text
-        # c данными из формы
         self.assertTrue(
             Post.objects.filter(
                 text=form_data['text']
@@ -74,30 +65,22 @@ class TaskCreateFormTests(TestCase):
 
     def test_create_post_with_group(self):
         '''Проверка на создание поста без указания группы'''
-        # Получу количество постов
         posts_count_before_creation = Post.objects.count()
-        # Создам образец формы для создания поста
         form_data = {
             'text': 'Текст для поста с группой',
             'group': self.group_1.id
         }
-        # Отправляю запрос на создание поста с ранее созданной формой
         response = self.authorized_client.post(
             reverse('posts:post_create'),
             data=form_data,
             follow=True
         )
-        # Проверю статус ответа должен быть 200
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        # Получу количество постов после создания поста
         posts_count_after_creation = Post.objects.count()
-        # Количество до создания должен быть меньше
         self.assertNotEqual(
             posts_count_before_creation,
             posts_count_after_creation
         )
-        # проверю что пост действительно был создан с указанием поля Text
-        # c данными из формы
         self.assertTrue(
             Post.objects.filter(
                 text=form_data['text'],
@@ -107,7 +90,6 @@ class TaskCreateFormTests(TestCase):
 
     def test_post_can_be_edit(self):
         ''' Проверка на изменение информации и группы в посте'''
-        # Сохраню информацию об изменении в посте для проверки
         old_post = self.post
         form = {
             'text': 'Измененный текст',
@@ -121,7 +103,6 @@ class TaskCreateFormTests(TestCase):
             follow=True
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        # Проверю изменится ли текст поста и группа у поста со старым id
         self.assertTrue(
             Post.objects.filter(
                 id=old_post.id,
@@ -140,14 +121,11 @@ class TaskCreateFormTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create_user(username='Denis')
-        # Создаем запись в базе данных для проверки сушествующего slug
         cls.group = Group.objects.create(
             title='Тестовый заголовок Группы 2',
             description='текст группы 2',
             slug='test-slug_2'
         )
-
-        # Создаем форму, если нужна проверка атрибутов
         cls.form = PostForm()
 
     @classmethod
@@ -160,7 +138,6 @@ class TaskCreateFormTests(TestCase):
         self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
-
         self.small_gif = (
             b'\x47\x49\x46\x38\x39\x61\x02\x00'
             b'\x01\x00\x80\x00\x00\x00\x00\x00'
@@ -194,7 +171,7 @@ class TaskCreateFormTests(TestCase):
         self.assertTrue(
             Post.objects.filter(
                 text='Текст для поста с группой',
-                # image='posts/Test.gif'
+                #image=form_data['image']
             ).exists()
         )
 
@@ -226,7 +203,6 @@ class CommentsTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create_user(username='Denis')
-        # Создаем запись в базе данных для проверки сушествующего slug
         cls.group = Group.objects.create(
             title='Тестовый заголовок Группы 2',
             description='текст группы 2',
@@ -237,11 +213,9 @@ class CommentsTests(TestCase):
             author=cls.user,
             group=cls.group,
         )
-        # Создаем форму, если нужна проверка атрибутов
         cls.form = CommentForm()
 
     def setUp(self):
-        # Создаем неавторизованный клиент
         self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
