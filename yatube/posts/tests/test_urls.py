@@ -84,7 +84,7 @@ class TaskURLTests(TestCase):
     # Проверка шаблонов
     def test_template(self):
         reversed_names = {
-            reverse('posts:index'): 'posts/index.html',
+            # reverse('posts:index'): 'posts/index.html',
             reverse(
                 'posts:group_list',
                 kwargs={'slug': self.group.slug}
@@ -96,8 +96,7 @@ class TaskURLTests(TestCase):
             reverse(
                 'posts:post_detail',
                 kwargs={'post_id': self.post.id}
-            ): 'posts/post_detail.html',
-
+            ): 'posts/post_detail.html'
         }
 
         for name, templates in reversed_names.items():
