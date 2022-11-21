@@ -191,7 +191,6 @@ class TaskCreateFormTests(TestCase):
         # Проверю создалась ли запись в базе данных
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(Post.objects.count(), posts_count + 1)
-    
         self.assertTrue(
             Post.objects.filter(
                 text='Текст для поста с группой',
