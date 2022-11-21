@@ -171,7 +171,7 @@ class TaskCreateFormTests(TestCase):
         self.assertTrue(
             Post.objects.filter(
                 text='Текст для поста с группой',
-                #image=form_data['image']
+                # image=form_data['image']
             ).exists()
         )
 
