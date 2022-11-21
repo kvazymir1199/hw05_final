@@ -254,7 +254,7 @@ class PagesTest(TestCase):
         first_group = Group.objects.first()
         last_group = Group.objects.last()
         reverses = {
-            #reverse('posts:index'),
+            # reverse('posts:index'),
             reverse(
                 'posts:group_list',
                 kwargs={'slug': last_group.slug}
