@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post, Group, User, Comment, Follow
+from .models import Post, Group, User, Follow
 from django.contrib.auth.decorators import login_required
 from .forms import PostForm, CommentForm
 from .utils import page_paginator
@@ -143,14 +143,15 @@ def profile_follow(request, username):
 
 @login_required
 def profile_unfollow(request, username):
-    Follow.objects.filter(
-        Follow,
-        user=request.user,
-        author__username=username
-    ).delete()
-    # get_object_or_404(
+    # попробовал вот такую запись но все сломалось,
+    # Follow.objects.filter(
     #     Follow,
     #     user=request.user,
     #     author__username=username
     # ).delete()
+    get_object_or_404(
+        Follow,
+        user=request.user,
+        author__username=username
+    ).delete()
     return redirect('posts:profile', username=username)
