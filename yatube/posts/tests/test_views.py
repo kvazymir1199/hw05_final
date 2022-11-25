@@ -364,7 +364,6 @@ class FollowTest(TestCase):
         follow_count_2 = Follow.objects.filter(user=self.user).count()
         self.assertEqual(follow_count, follow_count_2)
 
-
     def test_post_exists_in_auth_feed(self):
         response = self.authorized_client.get(
             reverse('posts:follow_index')
