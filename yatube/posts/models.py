@@ -47,7 +47,8 @@ class Post(CreatedModel):
     image = models.ImageField(
         'Картинка',
         upload_to='posts/',
-        blank=True
+        blank=True,
+        null=True
     )
 
     class Meta:
@@ -61,17 +62,17 @@ class Post(CreatedModel):
 class Comment(models.Model):
     post = models.ForeignKey(
         Post,
-        verbose_name="Группа",
-        related_name="post_comment",
+        verbose_name="Пост",
+        related_name="posts_comment",
         on_delete=models.CASCADE,
         blank=True,
-        null=True
+        null=False
     )
     author = models.ForeignKey(
         User,
         verbose_name="Автор",
         on_delete=models.CASCADE,
-        related_name='comment'
+        related_name='comment_author'
     )
     text = models.TextField(
         verbose_name="Описание"
@@ -85,11 +86,13 @@ class Comment(models.Model):
 class Follow(models.Model):
     user = models.ForeignKey(
         User,
+        verbose_name="Пользователь",
         on_delete=models.CASCADE,
         related_name='follower'
     )
     author = models.ForeignKey(
         User,
+        verbose_name="Автор поста",
         on_delete=models.CASCADE,
         related_name='following'
     )
@@ -100,4 +103,8 @@ class Follow(models.Model):
                 name='prevent_self_follow',
                 check=~models.Q(user=models.F('author')),
             ),
+            models.UniqueConstraint(
+                name='objects_unique',
+                fields=['author', 'user']
+            )
         ]
