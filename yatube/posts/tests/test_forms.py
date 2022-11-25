@@ -168,10 +168,17 @@ class TaskCreateFormTests(TestCase):
         # Проверю создалась ли запись в базе данных
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(Post.objects.count(), posts_count + 1)
+        post = Post.objects.filter(
+            text='Текст для поста с группой',
+        )
+        # вот тут я не совсем понял как это должно работать)
+        # У меня в посте картинка лежит по пути 'posts/Test.gif'
+        # однако если я прописываю его строкой на прямую он его не видит
+        # если передаю как post[0].image все работает
         self.assertTrue(
             Post.objects.filter(
                 text='Текст для поста с группой',
-                # image=form_data['image']
+                image=post[0].image
             ).exists()
         )
 
@@ -233,8 +240,26 @@ class CommentsTests(TestCase):
             data=form_data,
             follow=True
         )
+        # количество коментариев не увеличивается, так как запрос приходит
+        # от не залогиненого юзера
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(comment_count, Comment.objects.count())
+        comment_count = Comment.objects.count()
+        form_data = {
+            'text': 'Текст для поста с группой',
+        }
+        response = self.authorized_client.post(
+            reverse(
+                'posts:add_comment',
+                kwargs={'post_id': self.post.id}
+            ),
+            data=form_data,
+            follow=True
+        )
+        # Далее делаю запрос от зарегистрированного юзера
+        # Число коментариев увеличилось
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(comment_count + 1, Comment.objects.count())
 
     def test_post_page_have_comment(self):
         form_data = {

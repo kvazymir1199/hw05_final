@@ -291,7 +291,6 @@ class CacheTest(TestCase):
         self.post = Post.objects.create(
             author=self.user,
             text='Cache Test Index Page',
-            group=Group.objects.last(),
         )
         response = self.authorized_client.get(
             reverse('posts:index')
@@ -342,7 +341,7 @@ class FollowTest(TestCase):
             'user': self.user,
             'author': self.user2,
         }
-        response = self.authorized_client.get(
+        response = self.authorized_client.post(
             reverse(
                 'posts:profile_follow',
                 kwargs={'username': self.user2}),
@@ -352,7 +351,7 @@ class FollowTest(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         follow_count_1 = Follow.objects.filter(user=self.user).count()
         self.assertNotEqual(follow_count, follow_count_1)
-        response = self.authorized_client.get(
+        response = self.authorized_client.post(
             reverse(
                 'posts:profile_unfollow',
                 kwargs={'username': self.user2}
@@ -379,13 +378,17 @@ class FollowTest(TestCase):
             reverse('posts:follow_index')
         )
         posts_after_following = len(response.context['page_obj'])
-        self.assertEqual(posts_before_following,
-                         posts_after_following - 1)
+        self.assertEqual(
+            posts_before_following,
+            posts_after_following - 1
+        )
 
         response = self.authorized_client_2.get(
             reverse('posts:follow_index')
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         posts_new_user = len(response.context['page_obj'])
-        self.assertEqual(posts_before_following,
-                         posts_new_user)
+        self.assertEqual(
+            posts_before_following,
+            posts_new_user
+        )
