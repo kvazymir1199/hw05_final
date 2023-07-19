@@ -1,5 +1,8 @@
 ![Header](git_hub/preview.png)
 
+[![Django](https://img.shields.io/badge/DJANGO-ff1709?style=for-the-badge&logo=django&logoColor=white&color=darkgreen&labelColor=gray)](https://www.djangoproject.com/)
+![SQLite](https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white)
+[![Python](https://img.shields.io/badge/-Python-464646?style=for-the-badge&logo=Python)](https://www.python.org/)
 ## Описание
 
 **«Yatube»** является социальной сетью для публикации личных записей с возможностью публикацией и комментированием
